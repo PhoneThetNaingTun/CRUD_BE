@@ -30,7 +30,8 @@ const register = async (req: Request, res: Response) => {
     });
 
     const tokens = await generateToken({
-      sub: newUser.id,
+      id: newUser.id,
+      role: newUser.role,
     });
 
     res
@@ -68,7 +69,8 @@ const login = async (req: Request, res: Response) => {
     }
 
     const tokens = await generateToken({
-      sub: user.id,
+      id: user.id,
+      role: user.role,
     });
 
     res.cookie("accessToken", tokens.accessToken, accessTokenCookie);
@@ -85,7 +87,8 @@ const refreshToken = async (req: Request, res: Response) => {
   try {
     const user = req.user;
     const tokens = await generateToken({
-      sub: user?.sub,
+      id: user?.id!,
+      role: user?.role!,
     });
     res.cookie("accessToken", tokens.accessToken, accessTokenCookie);
     res.cookie("refreshToken", tokens.refreshToken, refreshTokenCookie);
@@ -101,7 +104,7 @@ const getMe = async (req: Request, res: Response) => {
   try {
     const user = req.user;
 
-    const isExist = await findOneUserById(user?.sub!);
+    const isExist = await findOneUserById(user?.id!);
 
     if (!isExist) {
       return res.status(400).json({ message: "User not found" });
