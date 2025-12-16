@@ -5,10 +5,11 @@ import {
   getAllProducts,
   updateProduct,
 } from "../controllers/product.controller";
+import { AuthMiddleware } from "../middleware/auth.middleware";
 
 const productRoute = Router();
 
-productRoute.get("/all", getAllProducts);
+productRoute.get("/all", AuthMiddleware, getAllProducts);
 productRoute.post("/create", createProduct);
 productRoute.patch("/:id", updateProduct);
 productRoute.delete("/:id", deleteProduct);
