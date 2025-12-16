@@ -1,4 +1,6 @@
+import argon from "argon2";
 import { Request, Response } from "express";
+import { findOneUserByEmail } from "../auth/auth.service";
 import { prisma } from "../lib/prisma";
 import {
   createOneUser,
@@ -37,10 +39,15 @@ const createUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
 
+    const isExist = await findOneUserByEmail(email);
+    if (isExist)
+      return res.status(400).json({ message: "Email already exist" });
+    const hash = await argon.hash(password);
+
     const newUser = await createOneUser({
       name,
       email,
-      password,
+      password: hash,
       role,
     });
 
