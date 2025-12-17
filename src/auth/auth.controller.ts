@@ -25,13 +25,13 @@ const register = async (req: Request, res: Response) => {
         email,
         password: hashPassword,
         name,
-        role: "DEVELOPER",
+        role_id: "",
       },
     });
 
     const tokens = await generateToken({
       id: newUser.id,
-      role: newUser.role,
+      role_id: newUser.role_id,
     });
 
     res
@@ -70,7 +70,7 @@ const login = async (req: Request, res: Response) => {
 
     const tokens = await generateToken({
       id: user.id,
-      role: user.role,
+      role_id: user.role_id,
     });
 
     res.cookie("accessToken", tokens.accessToken, accessTokenCookie);
@@ -88,7 +88,7 @@ const refreshToken = async (req: Request, res: Response) => {
     const user = req.user;
     const tokens = await generateToken({
       id: user?.id!,
-      role: user?.role!,
+      role_id: user?.role_id!,
     });
     res.cookie("accessToken", tokens.accessToken, accessTokenCookie);
     res.cookie("refreshToken", tokens.refreshToken, refreshTokenCookie);
