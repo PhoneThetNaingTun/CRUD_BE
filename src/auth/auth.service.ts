@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config";
 import { prisma } from "../lib/prisma";
@@ -17,19 +16,19 @@ export const findOneUserById = async (id: string) => {
     where: {
       id,
     },
-    select: { name: true, email: true, role: true, id: true },
+    select: { name: true, email: true, role: true, id: true, role_id: true },
   });
   return user;
 };
 
 export const generateToken = async ({
   id,
-  role,
+  role_id,
 }: {
   id: string;
-  role: Role;
+  role_id: string;
 }) => {
-  const payload = { id, role };
+  const payload = { id, role_id };
   const accessToken = jwt.sign(payload, config.ACCESS_SECRET, {
     expiresIn: "15m",
   });

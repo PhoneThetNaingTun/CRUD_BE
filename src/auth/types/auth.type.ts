@@ -1,5 +1,3 @@
-import { Role } from "@prisma/client";
-
 export interface UserPayload {
   id: string;
   email: string;
@@ -7,5 +5,5 @@ export interface UserPayload {
 
 export interface AccessTokenPayload {
   id: string;
-  role: Role;
+  roleIid: string;
 }
