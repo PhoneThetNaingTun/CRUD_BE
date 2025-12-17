@@ -36,3 +36,12 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model Project {
+  id         String   @id @default(cuid())
+  name       String
+  start_date DateTime
+  end_date   DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
