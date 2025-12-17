@@ -1,8 +1,14 @@
 import { Router } from "express";
 import { PermissionMiddleware } from "../middleware/permission.middleware";
 import { validateSchema } from "../middleware/validation.middleware";
-import { createRole, deleteRole, getAllRole, getRole } from "./role.controller";
-import { createRoleSchema } from "./schema/role.schema";
+import {
+  createRole,
+  deleteRole,
+  getAllRole,
+  getRole,
+  updateRole,
+} from "./role.controller";
+import { createRoleSchema, updateRoleSchema } from "./schema/role.schema";
 
 const roleRoute = Router();
 
@@ -13,6 +19,12 @@ roleRoute.post(
   PermissionMiddleware("role:create"),
   validateSchema(createRoleSchema),
   createRole
+);
+roleRoute.patch(
+  "/:id",
+  PermissionMiddleware("role:update"),
+  validateSchema(updateRoleSchema),
+  updateRole
 );
 roleRoute.delete("/:id", PermissionMiddleware("role:delete"), deleteRole);
 

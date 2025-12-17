@@ -16,7 +16,13 @@ export const findOneUserById = async (id: string) => {
     where: {
       id,
     },
-    select: { name: true, email: true, role: true, id: true, role_id: true },
+    select: {
+      name: true,
+      email: true,
+      role: { include: { rolePermissions: { select: { permission: true } } } },
+      id: true,
+      role_id: true,
+    },
   });
   return user;
 };
