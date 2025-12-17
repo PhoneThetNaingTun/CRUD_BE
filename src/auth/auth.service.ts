@@ -15,6 +15,7 @@ export const findOneUserById = async (id: string) => {
   const user = await prisma.user.findUnique({
     where: {
       id,
+      status: true,
     },
     select: {
       name: true,
@@ -22,6 +23,8 @@ export const findOneUserById = async (id: string) => {
       role: { include: { rolePermissions: { select: { permission: true } } } },
       id: true,
       role_id: true,
+      fcmToken: true,
+      status: true,
     },
   });
   return user;

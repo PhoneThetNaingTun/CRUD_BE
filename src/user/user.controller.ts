@@ -2,6 +2,7 @@ import argon from "argon2";
 import { Request, Response } from "express";
 import { findOneUserByEmail } from "../auth/auth.service";
 import { prisma } from "../lib/prisma";
+import { messaging } from "../utils/firebaseAdmin";
 import {
   createOneUser,
   deleteOneUser,
@@ -25,6 +26,7 @@ const getAllUsers = async (req: Request, res: Response) => {
         role_id: true,
         created_at: true,
         role: true,
+        status: true,
       },
     });
     const totalCount = await prisma.user.count();
@@ -103,5 +105,34 @@ const deleteUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const updateUserStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const User = await findOneUser(id);
+    if (!User) return res.status(404).json({ message: "User not found" });
 
-export { createUser, deleteUser, getAllUsers, updateUser };
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { status: true },
+      include: { role: true },
+    });
+    if (updatedUser.fcmToken) {
+      const message = {
+        notification: {
+          title: "Account Confirmed",
+          body: `${updatedUser.name}! Your account has been confirmed successfully with role ${updatedUser.role?.role}`,
+        },
+        token: updatedUser.fcmToken,
+      };
+      await messaging.send(message);
+    }
+    res
+      .status(200)
+      .json({ message: `${updatedUser.name} confirmed successfully` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export { createUser, deleteUser, getAllUsers, updateUser, updateUserStatus };
