@@ -3,4 +3,5 @@ node_modules
 .env
 
 /src/generated/prisma
-src/user/config/serviceAccountKey.jsonsrc/user/config/serviceAccountKey.json
+src/user/config/serviceAccountKey.json
+src/user/config/serviceAccountKey.json
