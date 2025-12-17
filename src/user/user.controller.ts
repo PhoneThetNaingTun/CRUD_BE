@@ -22,8 +22,9 @@ const getAllUsers = async (req: Request, res: Response) => {
         id: true,
         name: true,
         email: true,
-        role: true,
+        role_id: true,
         created_at: true,
+        role: true,
       },
     });
     const totalCount = await prisma.user.count();
@@ -37,7 +38,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role_id } = req.body;
 
     const isExist = await findOneUserByEmail(email);
     if (isExist)
@@ -48,7 +49,7 @@ const createUser = async (req: Request, res: Response) => {
       name,
       email,
       password: hash,
-      role,
+      role: { connect: { id: role_id } },
     });
 
     res.status(200).json({ message: `${newUser.name} created successfully` });
@@ -60,7 +61,7 @@ const createUser = async (req: Request, res: Response) => {
 const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, password, role, email } = req.body;
+    const { name, password, email, role_id } = req.body;
 
     const User = await findOneUser(id);
     if (!User) return res.status(404).json({ message: "User not found" });
@@ -76,8 +77,8 @@ const updateUser = async (req: Request, res: Response) => {
       id,
       name,
       password,
-      role,
       email,
+      role: { connect: { id: role_id } },
     });
 
     res.status(200).json({ message: `User updated successfully` });

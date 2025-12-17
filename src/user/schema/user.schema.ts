@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import * as z from "zod";
 export const createUserSchema = z.object({
   name: z
@@ -10,7 +9,7 @@ export const createUserSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters long")
     .max(20, "Password must be at most 20 characters long"),
-  role: z.enum(Role),
+  role_id: z.string(),
 });
 
 export const updateUserSchema = z.object({
@@ -20,8 +19,7 @@ export const updateUserSchema = z.object({
     .max(20, "Name must be at most 20 characters long")
     .optional(),
   email: z.email().optional(),
-
-  role: z.enum(Role).optional(),
+  role_id: z.string().optional(),
 });
 
 export type CreateUserSchema = z.infer<typeof createUserSchema>;

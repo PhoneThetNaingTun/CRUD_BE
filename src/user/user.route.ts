@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { PermissionMiddleware } from "../middleware/permission.middleware";
 import { validateSchema } from "../middleware/validation.middleware";
 import { createUserSchema, updateUserSchema } from "./schema/user.schema";
 import {
@@ -10,9 +11,19 @@ import {
 
 const userRoute = Router();
 
-userRoute.get("/all", getAllUsers);
-userRoute.post("/create", validateSchema(createUserSchema), createUser);
-userRoute.patch("/:id", validateSchema(updateUserSchema), updateUser);
-userRoute.delete("/:id", deleteUser);
+userRoute.get("/all", PermissionMiddleware("user:read"), getAllUsers);
+userRoute.post(
+  "/create",
+  PermissionMiddleware("user:create"),
+  validateSchema(createUserSchema),
+  createUser
+);
+userRoute.patch(
+  "/:id",
+  PermissionMiddleware("user:update"),
+  validateSchema(updateUserSchema),
+  updateUser
+);
+userRoute.delete("/:id", PermissionMiddleware("user:delete"), deleteUser);
 
 export { userRoute };
