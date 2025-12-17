@@ -26,6 +26,7 @@ export const findOneUserById = async (id: string) => {
       fcmToken: true,
       status: true,
     },
+
   });
   return user;
 };

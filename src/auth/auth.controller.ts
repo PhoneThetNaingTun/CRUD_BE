@@ -26,13 +26,17 @@ const register = async (req: Request, res: Response) => {
         password: hashPassword,
         name,
 
+
         fcmToken: fcmToken,
+
       },
     });
 
     const tokens = await generateToken({
       id: newUser.id,
+
       role_id: newUser.role_id as string,
+
     });
 
     res
@@ -75,6 +79,7 @@ const login = async (req: Request, res: Response) => {
     const tokens = await generateToken({
       id: user.id,
       role_id: user.role_id as string,
+
     });
 
     res.cookie("accessToken", tokens.accessToken, accessTokenCookie);

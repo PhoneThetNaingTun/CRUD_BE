@@ -42,7 +42,9 @@ async function main() {
         email: config.ADMIN_EMAIL,
         password: hashedPassword,
         role_id: adminRole.id,
+
         status: true,
+
       },
     });
 

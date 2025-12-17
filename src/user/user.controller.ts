@@ -2,7 +2,9 @@ import argon from "argon2";
 import { Request, Response } from "express";
 import { findOneUserByEmail } from "../auth/auth.service";
 import { prisma } from "../lib/prisma";
+
 import { messaging } from "../utils/firebaseAdmin";
+
 import {
   createOneUser,
   deleteOneUser,
@@ -27,6 +29,7 @@ const getAllUsers = async (req: Request, res: Response) => {
         created_at: true,
         role: true,
         status: true,
+
       },
     });
     const totalCount = await prisma.user.count();
@@ -105,6 +108,7 @@ const deleteUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const updateUserStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -136,3 +140,6 @@ const updateUserStatus = async (req: Request, res: Response) => {
 };
 
 export { createUser, deleteUser, getAllUsers, updateUser, updateUserStatus };
+
+
+

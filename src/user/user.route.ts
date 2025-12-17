@@ -8,6 +8,7 @@ import {
   getAllUsers,
   updateUser,
   updateUserStatus,
+
 } from "./user.controller";
 
 const userRoute = Router();
@@ -25,11 +26,13 @@ userRoute.patch(
   validateSchema(updateUserSchema),
   updateUser
 );
+
 userRoute.patch(
   "/status/:id",
   PermissionMiddleware("user:update"),
   updateUserStatus
 );
+
 
 userRoute.delete("/:id", PermissionMiddleware("user:delete"), deleteUser);
 
