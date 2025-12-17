@@ -11,6 +11,7 @@ const getAllRole = async (req: Request, res: Response) => {
       orderBy: { created_at: "desc" },
       skip,
       take: limit,
+      include: { rolePermissions: { select: { permission: true } } },
     });
     const totalCount = await prisma.role.count();
     const totalPages = Math.ceil(totalCount / limit);
@@ -35,10 +36,7 @@ const getRole = async (req: Request, res: Response) => {
 
 const createRole = async (req: Request, res: Response) => {
   try {
-    const { role, permissionIds } = req.body as {
-      role: string;
-      permissionIds: string[];
-    };
+    const { role, rolePermissions } = req.body;
 
     const newRole = await prisma.$transaction(async (tx) => {
       const newRole = await tx.role.create({
@@ -46,9 +44,9 @@ const createRole = async (req: Request, res: Response) => {
       });
 
       await tx.rolePermission.createMany({
-        data: permissionIds.map((id) => ({
+        data: rolePermissions.map((rp: any) => ({
           role_id: newRole.id,
-          permission_id: id,
+          permission_id: rp.permission.id,
         })),
       });
 
@@ -56,6 +54,40 @@ const createRole = async (req: Request, res: Response) => {
     });
 
     res.status(200).json({ message: `${newRole.role} created successfully` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const updateRole = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { role, rolePermissions } = req.body;
+
+    const updatedRole = await prisma.$transaction(async (tx) => {
+      const updatedRole = await tx.role.update({
+        where: { id },
+        data: { role },
+      });
+
+      await tx.rolePermission.deleteMany({
+        where: { role_id: id },
+      });
+
+      await tx.rolePermission.createMany({
+        data: rolePermissions.map((rp: any) => ({
+          role_id: updatedRole.id,
+          permission_id: rp.permission.id,
+        })),
+      });
+
+      return updatedRole;
+    });
+
+    res
+      .status(200)
+      .json({ message: `${updatedRole.role} updated successfully` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -74,4 +106,4 @@ const deleteRole = async (req: Request, res: Response) => {
   }
 };
 
-export { createRole, deleteRole, getAllRole, getRole };
+export { createRole, deleteRole, getAllRole, getRole, updateRole };
