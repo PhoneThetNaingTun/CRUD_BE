@@ -22,15 +22,18 @@ model Product {
 }
 
 model User {
-  id       String @id @default(cuid())
-  name     String
-  email    String @unique
-  password String
-  role_id  String
 
-  created_at       DateTime        @default(now())
-  updated_at       DateTime        @updatedAt
-  role             Role            @relation(fields: [role_id], references: [id])
+  id       String  @id @default(cuid())
+  name     String
+  email    String  @unique
+  password String
+  role_id  String?
+  fcmToken String?
+  status   Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  role       Role?     @relation(fields: [role_id], references: [id])
 
 }
 
@@ -57,7 +60,8 @@ model RolePermission {
   role_id       String
   permission_id String
 
-  role       Role       @relation(fields: [role_id], references: [id],onDelete: Cascade)
+
+  role       Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
   permission Permission @relation(fields: [permission_id], references: [id])
 
 }

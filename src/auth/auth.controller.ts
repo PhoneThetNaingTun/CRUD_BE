@@ -10,7 +10,7 @@ import {
 
 const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, fcmToken } = req.body;
 
     const user = await findOneUserByEmail(email);
 
@@ -25,13 +25,18 @@ const register = async (req: Request, res: Response) => {
         email,
         password: hashPassword,
         name,
-        role_id: "",
+
+
+        fcmToken: fcmToken,
+
       },
     });
 
     const tokens = await generateToken({
       id: newUser.id,
-      role_id: newUser.role_id,
+
+      role_id: newUser.role_id as string,
+
     });
 
     res
@@ -61,6 +66,9 @@ const login = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
+    if (!user.status) {
+      return res.status(400).json({ message: "User not active" });
+    }
 
     const isPasswordValid = await argon.verify(user.password, password);
 
@@ -70,7 +78,8 @@ const login = async (req: Request, res: Response) => {
 
     const tokens = await generateToken({
       id: user.id,
-      role_id: user.role_id,
+      role_id: user.role_id as string,
+
     });
 
     res.cookie("accessToken", tokens.accessToken, accessTokenCookie);
